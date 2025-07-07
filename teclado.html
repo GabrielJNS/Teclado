@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>Teclado Musical para Crianças</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.39/Tone.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #ffffff;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      transition: background-color 0.5s;
+      overflow: auto;
+    }
+    #piano-container {
+      display: flex;
+      position: relative;
+      padding: 10px;
+      background-color: #e0e0e0;
+      border-radius: 10px;
+      box-shadow: 0 18px 18px rgba(0, 0, 0, 0.671);
+      border: solid 38px #2c3e50;
+      margin-bottom: 20px;
+      max-width: 100%;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
+    .key {
+      border: 1px solid #000;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    .key:active {
+      transform: scale(0.95);
+    }
+    .white-key {
+      width: 50px;
+      height: 200px;
+      background-color: #ffffff;
+      z-index: 1;
+      position: relative;
+    }
+    .black-key {
+      width: 30px;
+      height: 130px;
+      background-color: #000000;
+      position: absolute;
+      z-index: 2;
+      margin-left: -15px;
+      color: white;
+    }
+    .octave {
+      display: flex;
+      position: relative;
+    }
+    .octave .white-key {
+      margin-right: 1px;
+    }
+    .octave .black-key.C-sharp { left: 35px; }
+    .octave .black-key.D-sharp { left: 85px; }
+    .octave .black-key.F-sharp { left: 185px; }
+    .octave .black-key.G-sharp { left: 235px; }
+    .octave .black-key.A-sharp { left: 285px; }
+
+    .floating-note {
+      position: absolute;
+      font-size: 32px;
+      font-weight: bold;
+      pointer-events: none;
+      animation: floatUp 3s ease-out forwards;
+      opacity: 1;
+      z-index: 10;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+    
+    #controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .control-btn {
+      padding: 8px 12px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    
+    .control-btn:hover {
+      background-color: #2980b9;
+    }
+    
+    .note-label {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    
+    #color-picker {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .color-option {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    }
+    
+    .color-option.selected {
+      border: 2px solid #000;
+      transform: scale(1.1);
+    }
+    
+    @media (max-width: 1200px) {
+      #piano-container {
+        transform: scale(0.8);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      #piano-container {
+        transform: scale(0.6);
+        transform-origin: top center;
+      }
+      .white-key {
+        width: 40px;
+        height: 180px;
+      }
+      .black-key {
+        width: 25px;
+        height: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="color-picker">
+    <div class="color-option selected" style="background-color: #2c3e50;" data-color="#2c3e50"></div>
+    <div class="color-option" style="background-color: #e74c3c;" data-color="#e74c3c"></div>
+    <div class="color-option" style="background-color: #9b59b6;" data-color="#9b59b6"></div>
+    <div class="color-option" style="background-color: #3498db;" data-color="#3498db"></div>
+    <div class="color-option" style="background-color: #1abc9c;" data-color="#1abc9c"></div>
+    <div class="color-option" style="background-color: #f1c40f;" data-color="#f1c40f"></div>
+    <div class="color-option" style="background-color: #e67e22;" data-color="#e67e22"></div>
+    <div class="color-option" style="background-color: #e84393;" data-color="#e84393"></div>
+  </div>
+
+  <div id="piano-container">
+    <div class="octave">
+      <button class="key white-key" data-note="C3" data-sol="Dó"><span class="note-label">Dó</span></button>
+      <button class="key black-key C-sharp" data-note="C#3" data-sol="Dó#"><span class="note-label">Dó#</span></button>
+      <button class="key white-key" data-note="D3" data-sol="Ré"><span class="note-label">Ré</span></button>
+      <button class="key black-key D-sharp" data-note="D#3" data-sol="Ré#"><span class="note-label">Ré#</span></button>
+      <button class="key white-key" data-note="E3" data-sol="Mi"><span class="note-label">Mi</span></button>
+      <button class="key white-key" data-note="F3" data-sol="Fá"><span class="note-label">Fá</span></button>
+      <button class="key black-key F-sharp" data-note="F#3" data-sol="Fá#"><span class="note-label">Fá#</span></button>
+      <button class="key white-key" data-note="G3" data-sol="Sol"><span class="note-label">Sol</span></button>
+      <button class="key black-key G-sharp" data-note="G#3" data-sol="Sol#"><span class="note-label">Sol#</span></button>
+      <button class="key white-key" data-note="A3" data-sol="Lá"><span class="note-label">Lá</span></button>
+      <button class="key black-key A-sharp" data-note="A#3" data-sol="Lá#"><span class="note-label">Lá#</span></button>
+      <button class="key white-key" data-note="B3" data-sol="Si"><span class="note-label">Si</span></button>
+    </div>
+
+    <div class="octave">
+      <button class="key white-key" data-note="C4" data-sol="Dó"><span class="note-label">Dó</span></button>
+      <button class="key black-key C-sharp" data-note="C#4" data-sol="Dó#"><span class="note-label">Dó#</span></button>
+      <button class="key white-key" data-note="D4" data-sol="Ré"><span class="note-label">Ré</span></button>
+      <button class="key black-key D-sharp" data-note="D#4" data-sol="Ré#"><span class="note-label">Ré#</span></button>
+      <button class="key white-key" data-note="E4" data-sol="Mi"><span class="note-label">Mi</span></button>
+      <button class="key white-key" data-note="F4" data-sol="Fá"><span class="note-label">Fá</span></button>
+      <button class="key black-key F-sharp" data-note="F#4" data-sol="Fá#"><span class="note-label">Fá#</span></button>
+      <button class="key white-key" data-note="G4" data-sol="Sol"><span class="note-label">Sol</span></button>
+      <button class="key black-key G-sharp" data-note="G#4" data-sol="Sol#"><span class="note-label">Sol#</span></button>
+      <button class="key white-key" data-note="A4" data-sol="Lá"><span class="note-label">Lá</span></button>
+      <button class="key black-key A-sharp" data-note="A#4" data-sol="Lá#"><span class="note-label">Lá#</span></button>
+      <button class="key white-key" data-note="B4" data-sol="Si"><span class="note-label">Si</span></button>
+    </div>
+
+    <div class="octave">
+      <button class="key white-key" data-note="C5" data-sol="Dó"><span class="note-label">Dó</span></button>
+      <button class="key black-key C-sharp" data-note="C#5" data-sol="Dó#"><span class="note-label">Dó#</span></button>
+      <button class="key white-key" data-note="D5" data-sol="Ré"><span class="note-label">Ré</span></button>
+      <button class="key black-key D-sharp" data-note="D#5" data-sol="Ré#"><span class="note-label">Ré#</span></button>
+      <button class="key white-key" data-note="E5" data-sol="Mi"><span class="note-label">Mi</span></button>
+      <button class="key white-key" data-note="F5" data-sol="Fá"><span class="note-label">Fá</span></button>
+      <button class="key black-key F-sharp" data-note="F#5" data-sol="Fá#"><span class="note-label">Fá#</span></button>
+      <button class="key white-key" data-note="G5" data-sol="Sol"><span class="note-label">Sol</span></button>
+      <button class="key black-key G-sharp" data-note="G#5" data-sol="Sol#"><span class="note-label">Sol#</span></button>
+      <button class="key white-key" data-note="A5" data-sol="Lá"><span class="note-label">Lá</span></button>
+      <button class="key black-key A-sharp" data-note="A#5" data-sol="Lá#"><span class="note-label">Lá#</span></button>
+      <button class="key white-key" data-note="B5" data-sol="Si"><span class="note-label">Si</span></button>
+    </div>
+
+    <div class="octave">
+      <button class="key white-key" data-note="C6" data-sol="Dó"><span class="note-label">Dó</span></button>
+      <button class="key black-key C-sharp" data-note="C#6" data-sol="Dó#"><span class="note-label">Dó#</span></button>
+      <button class="key white-key" data-note="D6" data-sol="Ré"><span class="note-label">Ré</span></button>
+      <button class="key black-key D-sharp" data-note="D#6" data-sol="Ré#"><span class="note-label">Ré#</span></button>
+      <button class="key white-key" data-note="E6" data-sol="Mi"><span class="note-label">Mi</span></button>
+      <button class="key white-key" data-note="F6" data-sol="Fá"><span class="note-label">Fá</span></button>
+      <button class="key black-key F-sharp" data-note="F#6" data-sol="Fá#"><span class="note-label">Fá#</span></button>
+      <button class="key white-key" data-note="G6" data-sol="Sol"><span class="note-label">Sol</span></button>
+      <button class="key black-key G-sharp" data-note="G#6" data-sol="Sol#"><span class="note-label">Sol#</span></button>
+      <button class="key white-key" data-note="A6" data-sol="Lá"><span class="note-label">Lá</span></button>
+      <button class="key black-key A-sharp" data-note="A#6" data-sol="Lá#"><span class="note-label">Lá#</span></button>
+      <button class="key white-key" data-note="B6" data-sol="Si"><span class="note-label">Si</span></button>
+    </div>
+  </div>
+
+  <div id="controls">
+    <button class="control-btn" id="notation-btn">Notação: Dó Ré Mi</button>
+    <button class="control-btn" id="color-btn">Cores: Ligado</button>
+    <button class="control-btn" id="bg-effect-btn">Fundo: Ligado</button>
+  </div>
+
+  <script>
+    const synth = new Tone.Synth({
+      oscillator: {
+        type: "sine"
+      },
+      envelope: {
+        attack: 0.005,
+        decay: 0.1,
+        sustain: 0.3,
+        release: 0.1
+      }
+    }).toDestination();
+    
+    const noteColors = {
+      'C3': '#FF6B6B', 'C#3': '#FF8E8E',
+      'D3': '#FFB347', 'D#3': '#FFD166',
+      'E3': '#F7DC6F', 'F3': '#A3E4D7',
+      'F#3': '#77C3EC', 'G3': '#7FB3D5',
+      'G#3': '#9B59B6', 'A3': '#D2B4DE',
+      'A#3': '#E6B0AA', 'B3': '#F5B7B1',
+      'C4': '#FF6B6B', 'C#4': '#FF8E8E',
+      'D4': '#FFB347', 'D#4': '#FFD166',
+      'E4': '#F7DC6F', 'F4': '#A3E4D7',
+      'F#4': '#77C3EC', 'G4': '#7FB3D5',
+      'G#4': '#9B59B6', 'A4': '#D2B4DE',
+      'A#4': '#E6B0AA', 'B4': '#F5B7B1',
+      'C5': '#FF6B6B', 'C#5': '#FF8E8E',
+      'D5': '#FFB347', 'D#5': '#FFD166',
+      'E5': '#F7DC6F', 'F5': '#A3E4D7',
+      'F#5': '#77C3EC', 'G5': '#7FB3D5',
+      'G#5': '#9B59B6', 'A5': '#D2B4DE',
+      'A#5': '#E6B0AA', 'B5': '#F5B7B1',
+      'C6': '#FF6B6B', 'C#6': '#FF8E8E',
+      'D6': '#FFB347', 'D#6': '#FFD166',
+      'E6': '#F7DC6F', 'F6': '#A3E4D7',
+      'F#6': '#77C3EC', 'G6': '#7FB3D5',
+      'G#6': '#9B59B6', 'A6': '#D2B4DE',
+      'A#6': '#E6B0AA', 'B6': '#F5B7B1'
+    };
+    
+    let showSolfege = true; 
+    let colorMode = true;   
+    let bgEffect = true;
+    let pianoColor = '#2c3e50';
+    
+    function playNote(note, element) {
+      synth.triggerAttackRelease(note, '8n');
+      
+      if (colorMode) {
+        element.style.backgroundColor = noteColors[note];
+        setTimeout(() => {
+          element.style.backgroundColor = element.classList.contains('black-key') ? '#000000' : '#ffffff';
+        }, 500);
+      }
+      
+      createFloatingNote(note, element);
+      
+      if (bgEffect) {
+        document.body.style.backgroundColor = noteColors[note];
+      }
+    }
+    
+    function createFloatingNote(note, element) {
+      const rect = element.getBoundingClientRect();
+      const noteText = document.createElement('div');
+      noteText.className = 'floating-note';
+      noteText.textContent = showSolfege ? element.dataset.sol : note.replace(/\d/, '');
+      noteText.style.color = noteColors[note];
+      noteText.style.left = `${rect.left + rect.width/2 - 15}px`;
+      noteText.style.top = `${rect.bottom - 30}px`;
+      document.body.appendChild(noteText);
+      
+      setTimeout(() => noteText.remove(), 3000);
+    }
+    
+    function updateKeyLabels() {
+      document.querySelectorAll('.note-label').forEach(label => {
+        const key = label.parentElement;
+        label.textContent = showSolfege ? key.dataset.sol : key.dataset.note.replace(/\d/, '');
+      });
+    }
+    
+    function updatePianoColor(color) {
+      document.getElementById('piano-container').style.borderColor = color;
+      pianoColor = color;
+    }
+    
+    document.querySelectorAll('.key').forEach(key => {
+      key.addEventListener('mousedown', () => {
+        playNote(key.dataset.note, key);
+      });
+    });
+    
+    document.getElementById('notation-btn').addEventListener('click', () => {
+      showSolfege = !showSolfege;
+      document.getElementById('notation-btn').textContent = 
+        showSolfege ? 'Notação: Dó Ré Mi' : 'Notação: C D E';
+      updateKeyLabels();
+    });
+    
+    document.getElementById('color-btn').addEventListener('click', () => {
+      colorMode = !colorMode;
+      document.getElementById('color-btn').textContent = 
+        colorMode ? 'Cores: Ligado' : 'Cores: Desligado';
+    });
+    
+    document.getElementById('bg-effect-btn').addEventListener('click', () => {
+      bgEffect = !bgEffect;
+      document.getElementById('bg-effect-btn').textContent = 
+        bgEffect ? 'Fundo: Ligado' : 'Fundo: Desligado';
+      if (!bgEffect) document.body.style.backgroundColor = '#ffffff';
+    });
+    
+    document.querySelectorAll('.color-option').forEach(option => {
+      option.addEventListener('click', () => {
+        document.querySelectorAll('.color-option').forEach(opt => {
+          opt.classList.remove('selected');
+        });
+        option.classList.add('selected');
+        updatePianoColor(option.dataset.color);
+      });
+    });
+    
+    const keyMap = {
+      'a': 'C3', 'w': 'C#3', 's': 'D3', 'e': 'D#3', 'd': 'E3',
+      'f': 'F3', 't': 'F#3', 'g': 'G3', 'y': 'G#3', 'h': 'A3',
+      'u': 'A#3', 'j': 'B3', 'k': 'C4', 'o': 'C#4', 'l': 'D4',
+      'p': 'D#4', ';': 'E4', "'": 'F4', ']': 'F#4', '\\': 'G4',
+      'z': 'G#4', 'x': 'A4', 'c': 'A#4', 'v': 'B4', 'b': 'C5',
+      'n': 'C#5', 'm': 'D5', ',': 'D#5', '.': 'E5', '/': 'F5',
+      '1': 'F#5', '2': 'G5', '3': 'G#5', '4': 'A5', '5': 'A#5',
+      '6': 'B5', '7': 'C6', '8': 'C#6', '9': 'D6', '0': 'D#6',
+      '-': 'E6', '=': 'F6', '[': 'F#6', 'q': 'G6', 'r': 'G#6'
+    };
+    
+    document.addEventListener('keydown', (e) => {
+      if (keyMap[e.key]) {
+        const element = document.querySelector(`[data-note="${keyMap[e.key]}"]`);
+        if (element) {
+          playNote(keyMap[e.key], element);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -2,23 +2,22 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>Teclado Musical para Crianças</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Teclado Musical + Músicas Infantis</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.39/Tone.min.js"></script>
   <style>
     body {
       margin: 0;
-      padding: 0;
+      padding: 20px 10px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
       background-color: #ffffff;
       font-family: Arial, sans-serif;
       font-size: 16px;
       transition: background-color 0.5s;
-      overflow: auto;
+      overflow-x: auto;
     }
     #piano-container {
       display: flex;
@@ -30,8 +29,8 @@
       border: solid 38px #2c3e50;
       margin-bottom: 20px;
       max-width: 100%;
-      flex-wrap: nowrap;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .key {
       border: 1px solid #000;
@@ -114,6 +113,7 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      font-weight: bold;
     }
     
     .control-btn:hover {
@@ -145,25 +145,114 @@
       transform: scale(1.1);
     }
     
-    @media (max-width: 1200px) {
-      #piano-container {
-        transform: scale(0.8);
-      }
+    .music-section {
+      background: #fff6e8;
+      border-radius: 28px;
+      padding: 15px 20px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 1100px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+      font-family: inherit;
+    }
+    .music-section h3 {
+      margin: 0 0 12px 0;
+      color: #e67e22;
+      text-align: center;
+      font-size: 1.4rem;
+    }
+    .song-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .song-btn {
+      background: #f4a261;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 40px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.1s;
+      box-shadow: 0 3px 0 #b45f2b;
+    }
+    .song-btn:active {
+      transform: translateY(2px);
+    }
+    .song-btn.active {
+      background: #2a9d8f;
+      box-shadow: 0 3px 0 #1f6c62;
+    }
+    .partitura-box {
+      background: #fff3e0;
+      border-radius: 32px;
+      padding: 12px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .partitura-title {
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #b45f2b;
+      margin-bottom: 10px;
+    }
+    .note-sequence {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+    .note-chip {
+      background: #ffd966;
+      padding: 5px 12px;
+      border-radius: 40px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #4a2e00;
+    }
+    .demo-btn {
+      background: #2a9d8f;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 60px;
+      font-weight: bold;
+      color: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: block;
+      margin: 0 auto;
+      box-shadow: 0 3px 0 #1f6c62;
     }
     
     @media (max-width: 768px) {
-      #piano-container {
-        transform: scale(0.6);
-        transform-origin: top center;
-      }
-      .white-key {
-        width: 40px;
-        height: 180px;
-      }
-      .black-key {
-        width: 25px;
-        height: 120px;
-      }
+      .white-key { width: 40px; height: 180px; }
+      .black-key { width: 25px; height: 120px; }
+      .note-label { font-size: 12px; }
+      .octave .black-key.C-sharp { left: 28px; }
+      .octave .black-key.D-sharp { left: 68px; }
+      .octave .black-key.F-sharp { left: 148px; }
+      .octave .black-key.G-sharp { left: 188px; }
+      .octave .black-key.A-sharp { left: 228px; }
+    }
+    @media (max-width: 550px) {
+      .white-key { width: 34px; height: 160px; }
+      .black-key { width: 22px; height: 105px; }
+      .octave .black-key.C-sharp { left: 24px; }
+      .octave .black-key.D-sharp { left: 58px; }
+      .octave .black-key.F-sharp { left: 126px; }
+      .octave .black-key.G-sharp { left: 160px; }
+      .octave .black-key.A-sharp { left: 194px; }
+    }
+    footer {
+      font-size: 0.7rem;
+      text-align: center;
+      color: #b87333;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -247,17 +336,25 @@
     <button class="control-btn" id="bg-effect-btn">Fundo: Ligado</button>
   </div>
 
+  <div class="music-section">
+    <h3>🎵 Músicas infantis para aprender 🎵</h3>
+    <div class="song-buttons" id="songButtons">
+      <button class="song-btn" data-song="0">🌟 Estrelinha Brilha</button>
+      <button class="song-btn" data-song="1">🎂 Parabéns pra Você</button>
+      <button class="song-btn" data-song="2">🐸 Atirei o pau no gato</button>
+    </div>
+    <div class="partitura-box">
+      <div class="partitura-title" id="partituraTitle">🎼 Estrelinha Brilha</div>
+      <div id="partituraNotes" class="note-sequence"></div>
+    </div>
+    <button id="playDemoBtn" class="demo-btn">🔊 Ouvir a música</button>
+  </div>
+  <footer>🎹 Toque nas teclas ou use o teclado do computador (A, S, D, F, G...). Divirta-se!</footer>
+
   <script>
     const synth = new Tone.Synth({
-      oscillator: {
-        type: "sine"
-      },
-      envelope: {
-        attack: 0.005,
-        decay: 0.1,
-        sustain: 0.3,
-        release: 0.1
-      }
+      oscillator: { type: "sine" },
+      envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.1 }
     }).toDestination();
     
     const noteColors = {
@@ -293,6 +390,7 @@
     let pianoColor = '#2c3e50';
     
     function playNote(note, element) {
+      if (Tone.context.state !== 'running') Tone.start();
       synth.triggerAttackRelease(note, '8n');
       
       if (colorMode) {
@@ -306,6 +404,7 @@
       
       if (bgEffect) {
         document.body.style.backgroundColor = noteColors[note];
+        setTimeout(() => { if(bgEffect) document.body.style.backgroundColor = '#ffffff'; }, 600);
       }
     }
     
@@ -318,7 +417,6 @@
       noteText.style.left = `${rect.left + rect.width/2 - 15}px`;
       noteText.style.top = `${rect.bottom - 30}px`;
       document.body.appendChild(noteText);
-      
       setTimeout(() => noteText.remove(), 3000);
     }
     
@@ -335,36 +433,31 @@
     }
     
     document.querySelectorAll('.key').forEach(key => {
-      key.addEventListener('mousedown', () => {
-        playNote(key.dataset.note, key);
-      });
+      key.addEventListener('mousedown', () => playNote(key.dataset.note, key));
+      key.addEventListener('touchstart', (e) => { e.preventDefault(); playNote(key.dataset.note, key); });
     });
     
     document.getElementById('notation-btn').addEventListener('click', () => {
       showSolfege = !showSolfege;
-      document.getElementById('notation-btn').textContent = 
-        showSolfege ? 'Notação: Dó Ré Mi' : 'Notação: C D E';
+      document.getElementById('notation-btn').textContent = showSolfege ? 'Notação: Dó Ré Mi' : 'Notação: C D E';
       updateKeyLabels();
+      atualizarPartitura();  
     });
     
     document.getElementById('color-btn').addEventListener('click', () => {
       colorMode = !colorMode;
-      document.getElementById('color-btn').textContent = 
-        colorMode ? 'Cores: Ligado' : 'Cores: Desligado';
+      document.getElementById('color-btn').textContent = colorMode ? 'Cores: Ligado' : 'Cores: Desligado';
     });
     
     document.getElementById('bg-effect-btn').addEventListener('click', () => {
       bgEffect = !bgEffect;
-      document.getElementById('bg-effect-btn').textContent = 
-        bgEffect ? 'Fundo: Ligado' : 'Fundo: Desligado';
+      document.getElementById('bg-effect-btn').textContent = bgEffect ? 'Fundo: Ligado' : 'Fundo: Desligado';
       if (!bgEffect) document.body.style.backgroundColor = '#ffffff';
     });
     
     document.querySelectorAll('.color-option').forEach(option => {
       option.addEventListener('click', () => {
-        document.querySelectorAll('.color-option').forEach(opt => {
-          opt.classList.remove('selected');
-        });
+        document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
         option.classList.add('selected');
         updatePianoColor(option.dataset.color);
       });
@@ -385,11 +478,70 @@
     document.addEventListener('keydown', (e) => {
       if (keyMap[e.key]) {
         const element = document.querySelector(`[data-note="${keyMap[e.key]}"]`);
-        if (element) {
-          playNote(keyMap[e.key], element);
-        }
+        if (element) playNote(keyMap[e.key], element);
       }
     });
+    
+    const musicas = [
+      { nome: "Estrelinha Brilha", notas: ["C4","C4","G4","G4","A4","A4","G4","F4","F4","E4","E4","D4","D4","C4"] },
+      { nome: "Parabéns pra Você", notas: ["C4","C4","D4","C4","F4","E4","C4","C4","D4","C4","G4","F4","C4","C4","C5","A4","F4","E4","D4","B4","B4","A4","F4","G4","F4"] },
+      { nome: "Atirei o pau no gato", notas: ["C4","C4","D4","E4","C4","C4","D4","E4","E4","F4","G4","E4","D4","C4","C4","D4","E4","C4","C4","D4","E4","C4"] }
+    ];
+    
+    let musicaAtual = 0;
+    
+    function atualizarPartitura() {
+      const musica = musicas[musicaAtual];
+      document.getElementById('partituraTitle').innerHTML = `🎼 ${musica.nome}`;
+      const container = document.getElementById('partituraNotes');
+      container.innerHTML = '';
+      musica.notas.forEach(notaFull => {
+        const notaBase = notaFull.replace(/\d/, '');
+        const nomeNota = showSolfege ? 
+          ({'C':'Dó','C#':'Dó#','D':'Ré','D#':'Ré#','E':'Mi','F':'Fá','F#':'Fá#','G':'Sol','G#':'Sol#','A':'Lá','A#':'Lá#','B':'Si'}[notaBase] || notaBase)
+          : notaBase;
+        const chip = document.createElement('span');
+        chip.className = 'note-chip';
+        chip.textContent = nomeNota;
+        container.appendChild(chip);
+      });
+    }
+    
+    function tocarDemo() {
+      if (Tone.context.state !== 'running') Tone.start();
+      const notas = musicas[musicaAtual].notas;
+      let i = 0;
+      function tocarProxima() {
+        if (i >= notas.length) return;
+        const nota = notas[i];
+        const tecla = document.querySelector(`.key[data-note="${nota}"]`);
+        if (tecla) {
+          playNote(nota, tecla);
+          tecla.classList.add('highlight-key');
+          setTimeout(() => tecla.classList.remove('highlight-key'), 300);
+        } else {
+          synth.triggerAttackRelease(nota, '8n');
+        }
+        i++;
+        setTimeout(tocarProxima, 480);
+      }
+      tocarProxima();
+    }
+    
+    document.querySelectorAll('.song-btn').forEach((btn, idx) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.song-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        musicaAtual = parseInt(btn.dataset.song);
+        atualizarPartitura();
+      });
+    });
+    document.getElementById('playDemoBtn').addEventListener('click', tocarDemo);
+    
+    document.querySelector('.song-btn[data-song="0"]').classList.add('active');
+    atualizarPartitura();
+    
+    window.addEventListener('resize', () => {});
   </script>
 </body>
 </html>

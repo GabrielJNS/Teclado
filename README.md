@@ -1,2 +1,1 @@
-# Teclado
-Teclado musical simples
+
